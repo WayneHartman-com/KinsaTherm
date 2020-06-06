@@ -8,3 +8,4 @@ This repo contains a Swift framework and a sample application.  You merely need 
 
 That's it.  You'll get notified of various events, like when the thermometer is connected, ready to take measurements, starts reading temperature, and comes back to you with a final reading.  Not a lot of rocket science.
 
+Oh, and in case there was any doubt, this is not an official Kinsa project, trademarks belong to their respective owners, etc.
