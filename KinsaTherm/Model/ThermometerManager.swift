@@ -11,6 +11,7 @@ import CoreBluetooth
 @objc public protocol ThermometerObserver {
     func thermometerBecameAvailable(_ thermometer: Thermometer)
     func thermometerDidDisconnect(_ thermometer: Thermometer)
+    func thermometer(_ thermometer: Thermometer, didSend date: Date)
     func thermometer(_ thermometer: Thermometer, didUpdate measurement: Measurement<UnitTemperature>)
     func thermometer(_ thermometer: Thermometer, didError error: Error)
     func thermometer(_ thermometer: Thermometer, didComplete measurement: Measurement<UnitTemperature>)
@@ -56,6 +57,12 @@ extension ThermometerManager: ThermometerObserver {
     public func thermometerDidDisconnect(_ thermometer: Thermometer) {
         self.observerStorage.allObjects.forEach { (observer: ThermometerObserver) in
             observer.thermometerDidDisconnect(thermometer)
+        }
+    }
+    
+    public func thermometer(_ thermometer: Thermometer, didSend date: Date) {
+        self.observerStorage.allObjects.forEach { (observer: ThermometerObserver) in
+            observer.thermometer(thermometer, didSend: date)
         }
     }
     

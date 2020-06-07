@@ -77,6 +77,10 @@ extension ViewController: ThermometerObserver {
         }
     }
     
+    func thermometer(_ thermometer: Thermometer, didSend date: Date) {
+        print("thermometer system time: \(self.dateFormatter.string(from: date))")
+    }
+    
     func thermometer(_ thermometer: Thermometer, didUpdate measurement: Measurement<UnitTemperature>) {
         self.operationQueue.addOperation {
             self.update(sample: TemperatureSample(date: Date(), temperature: measurement), isComplete: false)

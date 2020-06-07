@@ -16,11 +16,12 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
     }
     
     fileprivate enum MessageHeader: UInt8 {
+        case dateTime           = 0x06
+        case error              = 0x07
         case ready              = 0x0A
+        case disconnected       = 0x0D
         case readingUpdate      = 0x42
         case readingComplete    = 0x46
-        case disconnected       = 0x0D
-        case error              = 0x07
     }
     
     func interpretMessage(thermometer: Thermometer, data: Data, observer: ThermometerObserver?) {
@@ -38,6 +39,14 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
         }
         
         switch messageHeader {
+            case .dateTime:
+                let bytes = self.readBytes(data: data, range: 1...6)
+                if let date = self.parseDateTime(bytes: bytes) {
+                    os_log("Date/Time receieved from thermometer: %s", log: .thermComm, type: .debug, date.description)
+                    observer?.thermometer(thermometer, didSend: date)
+                } else {
+                    os_log("Unable to parse data: %s", log: .thermComm, type: .debug, data.description)
+                }
             case .ready:
                 os_log("Ready!", log: .thermComm, type: .debug)
                 observer?.thermometerIsReady(thermometer)
@@ -85,6 +94,25 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
         os_log("Measurement: %f", log: .thermComm, type: .debug, measurement.value)
         
         return measurement
+    }
+    
+    fileprivate func parseDateTime(bytes: [UInt8]) -> Date? {
+        guard bytes.count == 6 else {
+            return nil
+        }
+        
+        let cal = Calendar(identifier: .gregorian)
+        var comps = DateComponents()
+        comps.year = Int(bytes[0])
+        comps.month = Int(bytes[1])
+        comps.day = Int(bytes[2])
+        comps.hour = Int(bytes[3])
+        comps.minute = Int(bytes[4])
+        comps.second = Int(bytes[5])
+
+        let date = cal.date(from: comps)
+        
+        return date
     }
     
     fileprivate func readBytes(data: Data, range: ClosedRange<Int>) -> [UInt8] {
