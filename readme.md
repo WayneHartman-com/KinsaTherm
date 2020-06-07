@@ -32,3 +32,17 @@ Example bytes: `46000170000038`
 5. **`00`** - Always 0. Reserved for some future use.
 6. **`00`** - Always 0. Reserved for some future use.
 7. **`38`** - Unknown.  No discernible pattern.  Some sort of confidence or error byte?
+
+## Device System Clock Message
+
+Example bytes: 06140607102106
+
+    1. **`06`** - Date/Time header
+    2. **`14`** - Year #Y2K
+    3. **`06`** - Month
+    4. **`07`** - Day
+    5. **`10`** - Hour (expressed in 24 hour time)
+    6. **`21`** - Minute
+    7. **`06`** - Second
+
+
