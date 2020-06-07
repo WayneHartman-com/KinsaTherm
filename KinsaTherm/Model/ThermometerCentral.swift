@@ -174,7 +174,7 @@ extension ThermometerCentral: CBPeripheralDelegate {
             return
         }
         
-        os_log("Read value:", log: .thermComm, type: .debug, data.hexEncodedString())
+        os_log("Read value: %s", log: .thermComm, type: .debug, data.hexEncodedString())
         
         thermometer.messageInterpreter.interpretMessage(thermometer: thermometer, data: data, observer: self.observer)
     }
