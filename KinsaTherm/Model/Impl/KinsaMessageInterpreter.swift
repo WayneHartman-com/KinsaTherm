@@ -18,8 +18,10 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
     fileprivate enum MessageHeader: UInt8 {
         case dateTime           = 0x06
         case error              = 0x07
+        case mac                = 0x08
         case ready              = 0x0A
         case disconnected       = 0x0D
+        case ascii              = 0x30
         case readingUpdate      = 0x42
         case readingComplete    = 0x46
     }
@@ -43,7 +45,32 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
                 let bytes = self.readBytes(data: data, range: 1...6)
                 if let date = self.parseDateTime(bytes: bytes) {
                     os_log("Date/Time receieved from thermometer: %s", log: .thermComm, type: .debug, date.description)
-                    observer?.thermometer(thermometer, didSend: date)
+                    observer?.thermometer(thermometer, didSendDate: date)
+                } else {
+                    os_log("Unable to parse data: %s", log: .thermComm, type: .debug, data.description)
+                }
+            case .ascii:
+                guard data.count == 17 else {
+                    os_log("ASCII message unexpected length: %s", log: .thermComm, type: .debug, data.description)
+                    return
+                }
+                
+                let bytes = self.readBytes(data: data, range: 1...16)
+                if let text = self.parseText(bytes: bytes) {
+                    os_log("Text receieved from thermometer: %s", log: .thermComm, type: .debug, text)
+                    observer?.thermometer(thermometer, didSendText: text)
+                } else {
+                    os_log("Unable to parse data: %s", log: .thermComm, type: .debug, data.description)
+                }
+            case .mac:
+                guard data.count == 17 else {
+                    os_log("MAC address unexpected length: %s", log: .thermComm, type: .debug, data.description)
+                    return
+                }
+                
+                let bytes = self.readBytes(data: data, range: 1...16)
+                if let text = self.parseText(bytes: bytes) {
+                    os_log("MAC address receieved: %s", log: .thermComm, type: .debug, text)
                 } else {
                     os_log("Unable to parse data: %s", log: .thermComm, type: .debug, data.description)
                 }
@@ -113,6 +140,24 @@ internal class KinsaMessageInterpreter: MessageInterpreter {
         let date = cal.date(from: comps)
         
         return date
+    }
+    
+    fileprivate func parseText(bytes: [UInt8]) -> String? {
+        guard bytes.count > 0 else {
+            return nil
+        }
+        
+        var message = ""
+        
+        for byte in bytes {
+            guard byte != 0 else {
+                return message
+            }
+            
+            message.append(Character(UnicodeScalar(byte)))
+        }
+        
+        return message
     }
     
     fileprivate func readBytes(data: Data, range: ClosedRange<Int>) -> [UInt8] {

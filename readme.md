@@ -10,9 +10,9 @@ That's it.  You'll get notified of various events, like when the thermometer is 
 
 Oh, and in case there was any doubt, this is not an official Kinsa project, trademarks belong to their respective owners, etc.
 
-If you're interested in creating your own implementation for another platform, below are the byte mapping for temperature readings:
+If you're interested in creating your own implementation for another platform, below are the byte mappings for messages sent:
 
-## Intermediate Temperature Reading
+## Intermediate Temperature Reading Message
 
 Example bytes: `42000170`
 
@@ -21,7 +21,7 @@ Example bytes: `42000170`
 3. **`01`** - First byte of the temperature.
 4. **`70`** - Second byte of the temperature.
 
-## Final Temperature Reading
+## Final Temperature Reading Message
 
 Example bytes: `46000170000038`  
 
@@ -32,6 +32,17 @@ Example bytes: `46000170000038`
 5. **`00`** - Always 0. Reserved for some future use.
 6. **`00`** - Always 0. Reserved for some future use.
 7. **`38`** - Unknown.  No discernible pattern.  Some sort of confidence or error byte?
+
+## Text Message
+
+Example bytes: `304b696e73610000000000000000000000`
+
+1. **`30`** - Text Header
+2. **`4b`** - Ascii K
+3. **`69`** - Ascii i
+4. **`6e`** - Ascii n
+5. **`73`** - Ascii s
+6. **`61`** - Ascii a
 
 ## Device System Clock Message
 
@@ -44,5 +55,12 @@ Example bytes: `06140607102106`
 5. **`10`** - Hour (expressed in 24 hour time)
 6. **`21`** - Minute
 7. **`06`** - Second
+
+## Device MAC Address Message
+
+Example bytes: `0830303032333034323031353136313736`
+
+1. **`08`** MAC header
+2. Remaining 16 bytes are the ASCII encoded MAC address that corresponds with the sticker on the back of the device.
 
 
