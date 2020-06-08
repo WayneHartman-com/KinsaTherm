@@ -77,8 +77,12 @@ extension ViewController: ThermometerObserver {
         }
     }
     
-    func thermometer(_ thermometer: Thermometer, didSend date: Date) {
+    func thermometer(_ thermometer: Thermometer, didSendDate date: Date) {
         print("thermometer system time: \(self.dateFormatter.string(from: date))")
+    }
+    
+    func thermometer(_ thermometer: Thermometer, didSendText text: String) {
+        print("thermometer messaged: \(text)")
     }
     
     func thermometer(_ thermometer: Thermometer, didUpdate measurement: Measurement<UnitTemperature>) {
